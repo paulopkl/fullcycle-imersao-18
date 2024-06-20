@@ -1,0 +1,66 @@
+@port = 3000
+
+GET http://localhost:{{ port }}/events
+
+###
+# @name createEvent
+POST http://localhost:{{ port }}/events
+Content-Type: application/json
+
+{
+    "name": "New Event",
+    "description": "This is a new event",
+    "date": "2017-01-01T00:00:00",
+    "price": 100
+}
+
+###
+@eventId = {{ createEvent.response.body.id }}
+
+###
+GET http://localhost:{{ port }}/events/{{ eventId }}
+
+###
+PATCH http://localhost:{{ port }}/events/{{ eventId }}
+Content-Type: application/json
+
+{
+    "name": "New Event",
+    "description": "This is a new event",
+    "date": "2017-01-01T00:00:00",
+    "price": 100
+}
+
+###
+DELETE http://localhost:{{ port }}/events/96391bae-f097-40e1-b02d-978bdf007920
+
+###
+GET http://localhost:{{ port }}/events/{{ eventId }}
+
+###
+GET http://localhost:{{ port }}/events/{{ eventId }}/spots
+
+###
+# @name createSpot
+POST http://localhost:{{ port }}/events/{{ eventId }}/spots
+Content-Type: application/json
+
+{
+    "name": "A3"
+}
+
+###
+@spotName = {{ createSpot.response.body.name }}
+
+###
+POST http://localhost:{{ port }}/events/{{ eventId }}/reserve
+Content-Type: application/json
+X-Api-Token: partner1234
+
+{
+    "spots": ["{{ spotName }}"],
+    "ticket_kind": "full",
+    "email": "test@test.com"
+}
+
+# 117

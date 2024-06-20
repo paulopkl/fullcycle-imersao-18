@@ -1,0 +1,66 @@
+@port = 3001
+
+GET http://localhost:{{ port }}/eventos
+
+###
+# @name criarEvento
+POST http://localhost:{{ port }}/eventos
+Content-Type: application/json
+
+{
+    "nome": "New Event",
+    "descricao": "This is a new event",
+    "data": "2017-01-01T00:00:00",
+    "preco": 100
+}
+
+###
+@eventoId = {{ criarEvento.response.body.id }}
+
+###
+GET http://localhost:{{ port }}/eventos/{{ eventoId }}
+
+###
+PATCH http://localhost:{{ port }}/eventos/{{ eventoId }}
+Content-Type: application/json
+
+{
+    "nome": "New Event",
+    "descricao": "This is a new event",
+    "data": "2017-01-01T00:00:00",
+    "preco": 100
+}
+
+###
+DELETE http://localhost:{{ port }}/eventos/96391bae-f097-40e1-b02d-978bdf007920
+
+###
+GET http://localhost:{{ port }}/eventos/{{ eventoId }}
+
+###
+GET http://localhost:{{ port }}/eventos/{{ eventoId }}/lugares
+
+###
+# @name criarLugar
+POST http://localhost:{{ port }}/eventos/{{ eventoId }}/lugares
+Content-Type: application/json
+
+{
+    "nome": "A3"
+}
+
+###
+@spotName = {{ criarLugar.response.body.name }}
+
+###
+POST http://localhost:{{ port }}/eventos/{{ eventoId }}/reservar
+Content-Type: application/json
+X-Api-Token: partner123
+
+{
+    "lugares": ["{{ spotName }}"],
+    "tipo_ingresso": "inteira",
+    "email": "test@test.com"
+}
+
+# 117
