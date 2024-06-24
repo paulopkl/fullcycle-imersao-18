@@ -10,12 +10,14 @@ export const metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} flex flex-col min-h-screen items-center bg-primary text-default`}>
+        {children}
+      </body>
     </html>
   )
 }
