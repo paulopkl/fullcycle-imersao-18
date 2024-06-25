@@ -13,8 +13,8 @@ var (
 )
 
 const (
-	TicketTypeHalf TicketType = "half"
-	TicketTypeFull TicketType = "full"
+	TicketKindHalf TicketType = "half"
+	TicketKindFull TicketType = "full"
 )
 
 type Ticket struct {
@@ -48,11 +48,11 @@ func NewTicket(event *Event, spot *Spot, ticketType TicketType) (*Ticket, error)
 }
 
 func IsValidTicketType(ticketType TicketType) bool {
-	return ticketType == TicketTypeHalf || ticketType == TicketTypeFull
+	return ticketType == TicketKindHalf || ticketType == TicketKindFull
 }
 
 func (t *Ticket) CalculatePrice() {
-	if t.TicketType == TicketTypeHalf {
+	if t.TicketType == TicketKindHalf {
 		t.Price /= 2
 	}
 }

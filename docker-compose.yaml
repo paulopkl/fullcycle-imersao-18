@@ -1,0 +1,5 @@
+include:
+  - golang-microservice/docker-compose.yaml
+  - nestj-partners-api/docker-compose.yaml
+  - front/docker-compose.yaml
+  - kong-api-gateway/docker-compose-dbless.yaml

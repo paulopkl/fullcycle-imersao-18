@@ -2,8 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
+	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/paulopkl/fullcycle-imersao-18/golang-microservice/internal/events/infra/repository"
 	"github.com/paulopkl/fullcycle-imersao-18/golang-microservice/internal/events/infra/service"
 	"github.com/paulopkl/fullcycle-imersao-18/golang-microservice/internal/events/usecase"
@@ -11,8 +14,24 @@ import (
 	httpHandler "github.com/paulopkl/fullcycle-imersao-18/golang-microservice/internal/events/infra/http"
 )
 
+func init() {
+	// Carregar variáveis de ambiente a partir de um arquivo .env
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error on load Environment variables")
+	}
+}
+
 func main() {
-	db, err := sql.Open("mysql", "test_use:test_password@tcp(localhost:3306)/test_db")
+	dbUser := os.Getenv("DATABASE_USER")
+	dbPass := os.Getenv("DATABASE_PASSWORD")
+	dbHost := os.Getenv("DATABASE_HOST")
+	dbPort := os.Getenv("DATABASE_PORT")
+	dbName := os.Getenv("DATABASE_DB_NAME")
+
+	backendApiURL := os.Getenv("API_URL")
+
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", dbUser, dbPass, dbHost, dbPort, dbName))
 	if err != nil {
 		panic(err)
 	}
@@ -24,8 +43,10 @@ func main() {
 	}
 
 	partnerBaseURLs := map[int]string{
-		1: "http://localhost:9080/api1",
-		2: "http://localhost:9080/api2",
+		1: fmt.Sprintf("%s/partner1", backendApiURL),
+		2: fmt.Sprintf("%s/partner2", backendApiURL),
+		// 1: "http://localhost:9080/api1",
+		// 2: "http://localhost:9080/api2",
 	}
 
 	partnerFactory := service.NewPartnerFactory(partnerBaseURLs)

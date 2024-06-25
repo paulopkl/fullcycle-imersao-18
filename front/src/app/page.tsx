@@ -1,36 +1,25 @@
-import Image from "next/image";
-import Title from "./components/Title";
-import { EventModel } from "./models";
-import EventCard from "./components/EventCard";
+import Title from "../components/Title";
+import { EventModel } from "../models";
+import EventCard from "../components/EventCard";
 
-export default function Home() {
-  const events: EventModel[] = [
-    {
-      id: "1",
-      name: "Desenvolvimento de Soft",
-      organization: "Cubos",
-      date: "2022-12-31T00:00:00.000Z",
-      location: "são Paulo",
-      image_url: "",
-      price: 100,
-      rating: "1",
+export async function getEvents(): Promise<EventModel[]> {
+  const response = await fetch(`${process.env.GOLANG_API_URL}/events`, {
+    headers: {
+      apiKey: process.env.GOLANG_API_URL as string,
     },
-    {
-      id: "1",
-      name: "Desenvolvimento de Soft",
-      organization: "Cubos",
-      date: "2022-12-31T00:00:00.000Z",
-      location: "são Paulo",
-      image_url: "",
-      price: 100,
-      rating: "1",
-    },
-  ];
+    cache: "no-store",
+  });
+
+  return (await response.json()).events;
+}
+
+export default async function Home() {
+  const events: EventModel[] = await getEvents();
 
   return (
     <main className="mt-10 flex flex-col">
-      <Title>Eventos disponíveis</Title>
-      <div className="mt-8 sm:grid sm:grid-cols-auto-fit-cards flex flex-wrap justify-center gap-x-2 gap-y-4">
+      <Title>Available Events</Title>
+      <div className="flex flex-wrap justify-center mt-8 sm:grid sm:grid-cols-auto-fit-cards gap-x-2 gap-y-4">
         {events.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}

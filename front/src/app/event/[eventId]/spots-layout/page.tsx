@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { EventModel, SpotModel } from "../../../../models";
-import { TicketKindSelect } from "./TicketKindSelect";
 import { cookies } from "next/headers";
-import { EventImage } from "../../../../components/EventImage";
-import Title from "@/app/components/Title";
-import { SpotSeat } from "@/app/components/SpotSeat";
+import Title from "@/components/Title";
+import { SpotSeat } from "@/components/SpotSeat";
+import { EventImage } from "@/components/EventImage";
+import { TicketKindSelect } from "./TicketKindSelect";
 
 export async function getSpots(eventId: string): Promise<{
   event: EventModel;
@@ -17,7 +17,7 @@ export async function getSpots(eventId: string): Promise<{
         apikey: process.env.GOLANG_API_TOKEN as string,
       },
       cache: "no-store",
-      next: {
+      ["next" as any]: {
         tags: [`events/${eventId}`],
       },
     }
@@ -51,15 +51,9 @@ export default async function SpotsLayoutPage({
             const aNumber = parseInt(a.name.slice(1));
             const bNumber = parseInt(b.name.slice(1));
 
-            if (aNumber < bNumber) {
-              return -1;
-            }
-
-            if (aNumber > bNumber) {
-              return 1;
-            }
-
-            return 0;
+            if (aNumber < bNumber) return -1;
+            else if (aNumber > bNumber) return 1;
+            else return 0;
           }),
       ],
     };

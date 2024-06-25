@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-export default function Navbar() {
+function Navbar() {
   return (
     <div className="flex max-w-full items-center justify-items-stretch rounded-2xl bg-[#1D232A] px-6 py-2 shadow-nav">
       <div className="flex grow items-center justify-center">
@@ -27,3 +27,5 @@ export default function Navbar() {
     </div>
   );
 }
+
+export { Navbar };

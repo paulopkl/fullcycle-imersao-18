@@ -1,6 +1,6 @@
 "use client";
 
-// import { selectSpotAction, unselectSpotAction } from "../actions";
+import { selectSpotAction, unselectSpotAction } from "@/actions";
 
 interface SpotSeatProps {
   spotId: string;
@@ -27,11 +27,11 @@ export const SpotSeat = ({
         value={spotId}
         disabled={disabled}
         defaultChecked={selected}
-        // onChange={async (event) => {
-        //   event.target.checked
-        //     ? await selectSpotAction(eventId, spotId)
-        //     : await unselectSpotAction(spotId);
-        // }}
+        onChange={async (event) => {
+          event.target.checked
+            ? await selectSpotAction(eventId, spotId)
+            : await unselectSpotAction(spotId);
+        }}
       />
       <label
         htmlFor={`spot-${spotId}`}
