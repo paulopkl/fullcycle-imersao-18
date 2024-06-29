@@ -26,14 +26,13 @@ CREATE TABLE spots (
     FOREIGN KEY (event_id) REFERENCES events(id)
 );
 
-
 CREATE TABLE tickets (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
     event_id VARCHAR(36) NOT NULL,
     spot_id VARCHAR(36) NOT NULL,
     ticket_kind VARCHAR(10) NOT NULL,
     price FLOAT NOT NULL,
-    FOREIGN KEY (event_id) REFERENCES events(id)
+    FOREIGN KEY (event_id) REFERENCES events(id),
     FOREIGN KEY (spot_id) REFERENCES spots(id)
 );
 

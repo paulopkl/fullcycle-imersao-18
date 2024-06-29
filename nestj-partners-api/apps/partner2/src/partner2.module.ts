@@ -17,4 +17,4 @@ import { AuthModule } from '@app/core/auth/auth.module';
     LugaresModule,
   ],  
 })
-export class partner2Module {}
+export class Partner2Module {}

@@ -16,9 +16,7 @@ type ListSpotsUseCase struct {
 }
 
 func NewListSpotsUseCase(repo domain.EventRepository) *ListSpotsUseCase {
-	return &ListSpotsUseCase{
-		repo: repo,
-	}
+	return &ListSpotsUseCase{repo: repo}
 }
 
 func (uc *ListSpotsUseCase) Execute(input ListSpotsInputDTO) (*ListSpotsOutputDTO, error) {
@@ -32,9 +30,9 @@ func (uc *ListSpotsUseCase) Execute(input ListSpotsInputDTO) (*ListSpotsOutputDT
 		return nil, err
 	}
 
-	spotDTO := make([]SpotDTO, len(spots))
+	spotDTOs := make([]SpotDTO, len(spots))
 	for i, spot := range spots {
-		spotDTO[i] = SpotDTO{
+		spotDTOs[i] = SpotDTO{
 			ID:       event.ID,
 			Name:     event.Name,
 			Status:   string(spot.Status),
@@ -55,5 +53,5 @@ func (uc *ListSpotsUseCase) Execute(input ListSpotsInputDTO) (*ListSpotsOutputDT
 		ImageURL:     event.ImageURL,
 	}
 
-	return &ListSpotsOutputDTO{Event: eventDTO, Spots: spotDTO}, nil
+	return &ListSpotsOutputDTO{Event: eventDTO, Spots: spotDTOs}, nil
 }

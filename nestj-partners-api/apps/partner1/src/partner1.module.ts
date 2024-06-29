@@ -17,4 +17,4 @@ import { AuthModule } from '@app/core/auth/auth.module';
     SpotsModule,
   ],
 })
-export class partner1Module {}
+export class Partner1Module {}

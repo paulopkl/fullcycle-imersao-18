@@ -6,40 +6,40 @@ import (
 	"github.com/google/uuid"
 )
 
-type TicketType string
+type TicketKind string
 
 var (
-	ErrTicketPriceZero = errors.New("ticker price must be greater than zero")
+	ErrTicketPriceZero   = errors.New("ticker price must be greater than zero")
+	ErrInvalidTicketKind = errors.New("invalid ticket type")
 )
 
 const (
-	TicketKindHalf TicketType = "half"
-	TicketKindFull TicketType = "full"
+	TicketKindHalf TicketKind = "half"
+	TicketKindFull TicketKind = "full"
 )
 
 type Ticket struct {
 	ID         string
 	EventID    string
 	Spot       *Spot
-	TicketType TicketType
+	TicketKind TicketKind
 	Price      float64
 }
 
-func NewTicket(event *Event, spot *Spot, ticketType TicketType) (*Ticket, error) {
-	if !IsValidTicketType(ticketType) {
-		return nil, errors.New("invalid ticket type")
+func NewTicket(event *Event, spot *Spot, ticketKind TicketKind) (*Ticket, error) {
+	if !IsValidTicketKind(ticketKind) {
+		return nil, ErrInvalidTicketKind
 	}
 
 	ticket := &Ticket{
 		ID:         uuid.New().String(),
 		EventID:    event.ID,
 		Spot:       spot,
-		TicketType: ticketType,
+		TicketKind: ticketKind,
 		Price:      event.Price,
 	}
 
 	ticket.CalculatePrice()
-
 	if err := ticket.Validate(); err != nil {
 		return nil, err
 	}
@@ -47,12 +47,12 @@ func NewTicket(event *Event, spot *Spot, ticketType TicketType) (*Ticket, error)
 	return ticket, nil
 }
 
-func IsValidTicketType(ticketType TicketType) bool {
-	return ticketType == TicketKindHalf || ticketType == TicketKindFull
+func IsValidTicketKind(ticketKind TicketKind) bool {
+	return ticketKind == TicketKindHalf || ticketKind == TicketKindFull
 }
 
 func (t *Ticket) CalculatePrice() {
-	if t.TicketType == TicketKindHalf {
+	if t.TicketKind == TicketKindHalf {
 		t.Price /= 2
 	}
 }

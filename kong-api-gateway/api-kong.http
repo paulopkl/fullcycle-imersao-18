@@ -1,0 +1,15 @@
+@KONG_URL = "http://localhost:8000"
+
+###
+GET {KONG_URL}/partner1/events
+
+###
+GET {KONG_URL}/partner2/events
+
+###
+GET {KONG_URL}/partner1/events/1/reserve
+
+###
+GET {KONG_URL}/partner2/events/1/reservar
+
+###

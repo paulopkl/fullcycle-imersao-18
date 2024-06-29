@@ -17,9 +17,7 @@ export class SpotsService {
       },
     });
 
-    if (!event) {
-      throw new Error('Event not found');
-    }
+    if (!event) throw new Error('Event not found');
 
     return this.privateService.spot.create({
       data: {

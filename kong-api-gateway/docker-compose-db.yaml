@@ -43,7 +43,6 @@ services:
       - kong-api
 
   kong-db:
-    # hostname: kong-db
     # network_mode: "host"
     image: postgres:16.3-alpine
     ports:
@@ -57,7 +56,6 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
-    # network_mode: "host"
     dns:
       - 8.8.8.8
       - 8.8.4.4
@@ -85,4 +83,4 @@ services:
 
 networks:
   kong-api:
-    # driver: bridge
+    driver: bridge

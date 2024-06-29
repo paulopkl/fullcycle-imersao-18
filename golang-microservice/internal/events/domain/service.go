@@ -21,7 +21,8 @@ func (s *SpotService) GenerateSpots(event *Event, quantity int) error {
 		return ErrInvalidQuantity
 	}
 
-	for i := range quantity {
+	// for i := range quantity {
+	for i := 0; i < quantity; i++ {
 		spotName := fmt.Sprintf("%c%d", 'A'+i/10, i%10+1)
 		spot, err := NewSpot(event, spotName)
 

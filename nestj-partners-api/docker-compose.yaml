@@ -11,9 +11,9 @@ services:
     volumes:
       - .:/home/node/app
     networks:
-      - app
+      - nestjs-app
 
-  db:
+  nestjs-db:
     image: mysql:8.0.30-debian
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -24,7 +24,8 @@ services:
       - ./.docker/mysql:/docker-entrypoint-initdb.d
       # - ./.docker/dbdata:/var/lib/mysql
     networks:
-      - app
+      - nestjs-app
 
 networks:
-  app:
+  nestjs-app:
+    driver: bridge

@@ -16,9 +16,7 @@ type DefaultPartnerFactory struct {
 }
 
 func NewPartnerFactory(partnerBaseURLs map[int]string) PartnerFactory {
-	return &DefaultPartnerFactory{
-		PartnerBaseURLs: partnerBaseURLs,
-	}
+	return &DefaultPartnerFactory{PartnerBaseURLs: partnerBaseURLs}
 }
 
 func (f *DefaultPartnerFactory) CreatePartner(parterID int) (Partner, error) {

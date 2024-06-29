@@ -14,11 +14,65 @@ type mysqlEventRepository struct {
 	db *sql.DB
 }
 
+// NewMysqlEventRepository creates a new MySQL event repository.
 func NewMysqlEventRepository(db *sql.DB) (domain.EventRepository, error) {
 	return &mysqlEventRepository{db: db}, nil
 }
 
 // ///////////// IMPLEMENTAÇÕES do domain.EventRepository ///////////////
+// CreateSpot inserts a new spot into the database.
+func (r *mysqlEventRepository) CreateSpot(spot *domain.Spot) error {
+	query := `
+		INSERT INTO spots (id, event_id, name, status, ticket_id)
+		VALUES (?, ?, ?, ?, ?);
+	`
+
+	_, err := r.db.Exec(
+		query,
+		spot.ID,
+		spot.EventID,
+		spot.Name,
+		spot.Status,
+		spot.TicketID,
+	)
+
+	return err
+}
+
+// CreateTicket inserts a new ticket into the database.
+func (r *mysqlEventRepository) CreateTicket(ticket *domain.Ticket) error {
+	query := `
+		INSERT INTO tickets (id, event_id, spot_id, ticket_kind, price)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`
+
+	_, err := r.db.Exec(
+		query,
+		ticket.ID,
+		ticket.EventID,
+		ticket.Spot.ID,
+		ticket.TicketKind,
+		ticket.Price,
+	)
+	// if err != nil {
+	// 	return err
+	// }
+
+	return err
+}
+
+func (r *mysqlEventRepository) CreateEvent(event *domain.Event) error {
+	query := `
+		INSERT INTO events (id, name, location, organization, rating, date, image_url, capacity, price, partner_id)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`
+
+	_, err := r.db.Exec(query, event.ID, event.Name, event.Location, event.Organization, event.Rating, event.Date.Format("2006-01-02 15:04:05"), event.ImageURL, event.Capacity, event.Price, event.PartnerID)
+
+	return err
+}
+
+// ListEvents returns all events with their associated spots and tickets.
 func (r *mysqlEventRepository) ListEvents() ([]domain.Event, error) {
 	query := `
 		SELECT
@@ -103,7 +157,7 @@ func (r *mysqlEventRepository) ListEvents() ([]domain.Event, error) {
 					ID:         ticketID.String,
 					EventID:    ticketEventID.String,
 					Spot:       spot,
-					TicketType: domain.TicketType(ticketKind.String),
+					TicketKind: domain.TicketKind(ticketKind.String),
 					Price:      ticketPrice.Float64,
 				}
 				event.Tickets = append(event.Tickets, ticket)
@@ -123,24 +177,7 @@ func (r *mysqlEventRepository) ListEvents() ([]domain.Event, error) {
 	return events, nil
 }
 
-func (r *mysqlEventRepository) CreateSpot(spot *domain.Spot) error {
-	query := `
-		INSERT INTO spots (id, event_id, name, status, ticket_id)
-		VALUES (?, ?, ?, ?, ?);
-	`
-
-	_, err := r.db.Exec(
-		query,
-		spot.ID,
-		spot.EventID,
-		spot.Name,
-		spot.Status,
-		spot.TicketID,
-	)
-
-	return err
-}
-
+// ReserveSpot updates a spot's status to reserved.
 func (r *mysqlEventRepository) ReserveSpot(spotID, ticketID string) error {
 	query := `
 		UPDATE spots SET status = ?, ticket_id = ?
@@ -152,27 +189,7 @@ func (r *mysqlEventRepository) ReserveSpot(spotID, ticketID string) error {
 	return err
 }
 
-func (r *mysqlEventRepository) CreateTicket(ticket *domain.Ticket) error {
-	query := `
-		INSERT INTO tickets (id, event_id, spot_id, ticket_type, price)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`
-
-	_, err := r.db.Exec(
-		query,
-		ticket.ID,
-		ticket.EventID,
-		ticket.Spot.ID,
-		ticket.TicketType,
-		ticket.Price,
-	)
-	// if err != nil {
-	// 	return err
-	// }
-
-	return err
-}
-
+// FindEventByID returns an event by its ID, including associated spots and tickets.
 func (r *mysqlEventRepository) FindEventByID(eventID string) (*domain.Event, error) {
 	query := `
 		SELECT
@@ -208,6 +225,7 @@ func (r *mysqlEventRepository) FindEventByID(eventID string) (*domain.Event, err
 	return event, nil
 }
 
+// FindSpotsByEventID returns all spots for a given event ID.
 func (r *mysqlEventRepository) FindSpotsByEventID(eventID string) ([]*domain.Spot, error) {
 	query := `
 		SELECT
@@ -247,7 +265,7 @@ func (r *mysqlEventRepository) FindSpotsByName(eventID, spotName string) (*domai
 	query := `
 		SELECT
 			s.id, s.event_id, s.name, s.status, s.ticket_id,
-			t.id, t.event_id, t.spot_id, t.ticket_type, t.price
+			t.id, t.event_id, t.spot_id, t.ticket_kind, t.price
 		FROM spots AS s
 		LEFT JOIN tickets AS t ON s.id = t.spot_id
 		WHERE s.event_id = ? AND s.name = ?
@@ -258,7 +276,7 @@ func (r *mysqlEventRepository) FindSpotsByName(eventID, spotName string) (*domai
 	var (
 		spot                                              domain.Spot
 		ticket                                            domain.Ticket
-		ticketID, ticketEventID, ticketSpotID, ticketType sql.NullString
+		ticketID, ticketEventID, ticketSpotID, ticketKind sql.NullString
 		ticketPrice                                       sql.NullFloat64
 	)
 
@@ -271,7 +289,7 @@ func (r *mysqlEventRepository) FindSpotsByName(eventID, spotName string) (*domai
 		&ticketID,
 		&ticketEventID,
 		&ticketSpotID,
-		&ticketType,
+		&ticketKind,
 		&ticketPrice,
 	)
 
@@ -287,7 +305,7 @@ func (r *mysqlEventRepository) FindSpotsByName(eventID, spotName string) (*domai
 		ticket.ID = ticketID.String
 		ticket.EventID = ticketEventID.String
 		ticket.Spot = &spot
-		ticket.TicketType = domain.TicketType(ticketType.String)
+		ticket.TicketKind = domain.TicketKind(ticketKind.String)
 		ticket.Price = ticketPrice.Float64
 		spot.TicketID = ticket.ID
 	}

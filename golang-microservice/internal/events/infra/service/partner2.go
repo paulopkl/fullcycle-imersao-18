@@ -29,7 +29,7 @@ type Partner2ReservationResponse struct {
 func (p *Partner2) MakeReservation(req *ReservationRequest) ([]ReservationResponse, error) {
 	partnerReq := Partner2ReservationRequest{
 		Lugares:      req.Spots,
-		TipoIngresso: req.TicketType,
+		TipoIngresso: req.TicketKind,
 		Email:        req.Email,
 	}
 
@@ -59,7 +59,7 @@ func (p *Partner2) MakeReservation(req *ReservationRequest) ([]ReservationRespon
 	}
 
 	var partnerResp []Partner2ReservationResponse
-	if err := json.NewDecoder(httpResponse.Body).Decode(partnerResp); err != nil {
+	if err := json.NewDecoder(httpResponse.Body).Decode(&partnerResp); err != nil {
 		return nil, err
 	}
 
